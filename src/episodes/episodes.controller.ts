@@ -1,8 +1,11 @@
-import { Body, Controller, DefaultValuePipe, Get, NotFoundException, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, Get, NotFoundException, Param, ParseIntPipe, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { EpisodesService } from './episodes.service';
 import { CreateEpisodeDto } from './dto/create-episode.dto';
 import { ConfigService } from 'src/config/config.service';
+import { IsPositivePipe } from 'src/pipes/is-positive.pipe';
+import { ApiKeyGuard } from 'src/guards/api-key.guard';
 
+// @UseGuards(ApiKeyGuard)
 @Controller('episodes')
 export class EpisodesController {
 
@@ -19,7 +22,7 @@ export class EpisodesController {
     @Get()
     findAll( 
         @Query('sort') sort: 'asc' | 'desc' = 'desc',
-        @Query('limit', new DefaultValuePipe(100), ParseIntPipe) limit: number
+        @Query('limit', new DefaultValuePipe(100), ParseIntPipe, IsPositivePipe) limit: number
     ) {
         // return "all episodes"
         return this.episodesService.findAll(sort)
@@ -46,8 +49,9 @@ export class EpisodesController {
         return episode
     }
 
+    @UseGuards(ApiKeyGuard)
     @Post()
-    create(@Body() input: CreateEpisodeDto) {
+    create(@Body(ValidationPipe) input: CreateEpisodeDto) {
         // return "new episode"
         console.log("input >>> ", input);
         return this.episodesService.create(input)
