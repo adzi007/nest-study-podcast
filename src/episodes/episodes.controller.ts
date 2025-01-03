@@ -37,9 +37,6 @@ export class EpisodesController {
     @Get(":id")
     async findOne( @Param() id: string ){
 
-        // console.log("id >>> ", id);
-        // return "one episode"
-
         const episode = await this.episodesService.findOne(id)
 
         if(!episode) {
@@ -53,7 +50,7 @@ export class EpisodesController {
     @Post()
     create(@Body(ValidationPipe) input: CreateEpisodeDto) {
         // return "new episode"
-        console.log("input >>> ", input);
+        // console.log("input >>> ", input);
         return this.episodesService.create(input)
         
 
